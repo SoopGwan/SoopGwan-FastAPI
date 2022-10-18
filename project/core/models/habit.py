@@ -1,20 +1,17 @@
-from sqlalchemy import Column, VARCHAR, BigInteger, ForeignKey, DATETIME
+from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, String, text
 from sqlalchemy.orm import relationship
-
 from project.core.models import Base
-from project.core.models.habit_success import Habit_Success
-from project.core.models.day import Day
 
-class Habit(Base):
-    __tablename__ = "habit"
+class TblHabit(Base):
+    __tablename__ = 'tbl_habit'
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
-    context = Column(VARCHAR(200), nullable=False)
-    start_at = Column(DATETIME, nullable=False)
-    end_at = Column(DATETIME, nullable=False)
-    count = Column(BigInteger, nullable=False)
-    user_id = Column(BigInteger, ForeignKey("user.id"), primary_key=True)
-    day_id = Column(BigInteger, ForeignKey("day.id"), primary_key=True)
+    id = Column(BigInteger, primary_key=True, server_default=text("'0'"))
+    content = Column(String(200), nullable=False)
+    start_at = Column(DateTime, nullable=False)
+    end_at = Column(DateTime, nullable=False)
+    user_id = Column(ForeignKey('tbl_user.id'), nullable=False, index=True, server_default=text("'0'"))
+    day_id = Column(ForeignKey('tbl_day.id'), nullable=False, index=True, server_default=text("'0'"))
+    count = Column(BigInteger, nullable=False, server_default=text("'0'"))
 
-    habit_success = relationship(Habit_Success, backref="habit")
-    day = relationship(Day, backref="day")
+    day = relationship('TblDay')
+    user = relationship('TblUser')

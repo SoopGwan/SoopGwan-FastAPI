@@ -1,16 +1,13 @@
-from sqlalchemy import Column, VARCHAR, BigInteger, ForeignKey
+from sqlalchemy import BigInteger, Column, ForeignKey, String, text
 from sqlalchemy.orm import relationship
-
 from project.core.models import Base
-from project.core.models.achive_success import Achive_Success
 
+class TblAchive(Base):
+    __tablename__ = 'tbl_achive'
 
-class Achive(Base):
-    __tablename__ = "achive"
+    id = Column(BigInteger, primary_key=True, server_default=text("'0'"))
+    condition = Column(String(200), nullable=False)
+    title = Column(String(10), nullable=False)
+    user_id = Column(ForeignKey('tbl_user.id'), nullable=False, index=True, server_default=text("'0'"))
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
-    condition = Column(VARCHAR(200), nullable=False)
-    title = Column(VARCHAR(10), nullable=False)
-    user_id = Column(BigInteger, ForeignKey("user.id"), primary_key=True)
-
-    comment = relationship(Achive_Success, backref="achive")
+    user = relationship('TblUser')
