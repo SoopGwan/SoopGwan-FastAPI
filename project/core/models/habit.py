@@ -1,17 +1,17 @@
-from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, String, text
+from sqlalchemy import BigInteger, Column, DATE, ForeignKey, String
 from sqlalchemy.orm import relationship
 from project.core.models import Base
 
-class TblHabit(Base):
+class Habit(Base):
     __tablename__ = 'tbl_habit'
 
-    id = Column(BigInteger, primary_key=True, server_default=text("'0'"))
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
     content = Column(String(200), nullable=False)
-    start_at = Column(DateTime, nullable=False)
-    end_at = Column(DateTime, nullable=False)
-    user_id = Column(ForeignKey('tbl_user.id'), nullable=False, index=True, server_default=text("'0'"))
-    day_id = Column(ForeignKey('tbl_day.id'), nullable=False, index=True, server_default=text("'0'"))
-    count = Column(BigInteger, nullable=False, server_default=text("'0'"))
+    start_at = Column(DATE, nullable=False)
+    end_at = Column(DATE, nullable=False)
+    user_id = Column(ForeignKey('user.id'), index=True)
+    day_id = Column(ForeignKey('day.id'), index=True)
+    count = Column(BIGINT, nullable=False)
 
-    day = relationship('TblDay')
-    user = relationship('TblUser')
+    day = relationship('Day')
+    user = relationship('User')
