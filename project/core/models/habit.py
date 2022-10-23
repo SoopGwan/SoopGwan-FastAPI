@@ -1,11 +1,11 @@
-from sqlalchemy import BIGINT, Column, DATE, ForeignKey, String
+from sqlalchemy import BigInteger, Column, DATE, ForeignKey, String
 from sqlalchemy.orm import relationship
 from project.core.models import Base
 
 class Habit(Base):
     __tablename__ = 'tbl_habit'
 
-    id = Column(BIGINT, primary_key=True, autoincrement=True)
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
     content = Column(String(200), nullable=False)
     start_at = Column(DATE, nullable=False)
     end_at = Column(DATE, nullable=False)

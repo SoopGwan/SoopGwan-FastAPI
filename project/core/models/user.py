@@ -1,10 +1,10 @@
-from sqlalchemy import CHAR, Column, String, BIGINT
+from sqlalchemy import CHAR, Column, String, BigInteger
 from project.core.models import Base
 
 class User(Base):
     __tablename__ = 'tbl_user'
 
-    id = Column(BIGINT, primary_key=True, autoincrement=True)
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
     account_id = Column(String(24), nullable=False)
     password = Column(CHAR(60), nullable=False)
     name = Column(String(10), nullable=False)
