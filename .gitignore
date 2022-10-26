@@ -1,4 +1,8 @@
-/project/config.py
+/project/core/config.py
 /project/__pycache__
 /project/app/__pycache__
+/project/core/__pycache__
+/project/core/models/__pycache__
+/project/core/schemas/__pycache__
+/project/utils/__pycache__
 /.idea
