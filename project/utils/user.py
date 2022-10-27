@@ -20,7 +20,7 @@ def check_id(account_id: str, session: Session):
 
 def send_code(phone_number: str):
     code = str(random.randint(1, 9999)).zfill(4)
-    count = dict(json.loads(Redis.get(name="01034242475").decode('utf-8')))['count'] if Redis.get(name="01034242475") else 0
+    count = dict(json.loads(Redis.get(name=phone_number).decode('utf-8')))['count'] if Redis.get(name=phone_number) else 0
     if count >= 5:
         raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS)
     data = {
