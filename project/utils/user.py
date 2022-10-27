@@ -12,7 +12,7 @@ def check_id(account_id: str, session: Session):
     user = session.query(User.account_id).filter(User.account_id == account_id)
 
     if user.scalar():
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Overlap")
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="아이디 중복")
 
     else:
         return HTTPException(status_code=status.HTTP_204_NO_CONTENT)
@@ -37,3 +37,12 @@ def send_code(phone_number: str):
     params['text'] = f"[숲관] 회원가입 인증코드 입니다. : {code}"
     Message(API_KEY, API_SECRET).send(params)
     return HTTPException(status_code=status.HTTP_200_OK)
+
+def verify_code(phone_number:str, code:str):
+    if Redis.get(name=phone_number):
+        if code == dict(json.loads(Redis.get(name=phone_number).decode('utf-8')))['code']:
+            return HTTPException(status_code=status.HTTP_200_OK)
+        else:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="인증코드가 맞지 않음.")
+    else:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="인증코드 사용가능 시간이 지남.")
