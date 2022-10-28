@@ -40,7 +40,7 @@ def send_code(phone_number: str):
     params['to'] = phone_number
     params['from'] = PHONE_NUMBER
     params['text'] = f"[숲관] 회원가입 인증코드 입니다. : {code}"
-    #Message(API_KEY, API_SECRET).send(params)
+    Message(API_KEY, API_SECRET).send(params)
     return HTTPException(status_code=status.HTTP_200_OK)
 
 def verify_code(phone_number:str, code:str):
