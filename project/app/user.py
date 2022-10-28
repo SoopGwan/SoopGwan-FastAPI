@@ -27,7 +27,4 @@ async def verifying_code(body: VerifyCode):
 @app.post("/signup", status_code=status.HTTP_201_CREATED)
 async def signup_user(body: SignUp):
     with session_scope() as session:
-        REGEX_PASSWORD = r'^(?=.*[\d])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*()])[\w\d!@#$%^&*()]{8,}$'
-        if not re.fullmatch(REGEX_PASSWORD, body.password):
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="비밀번호 형식이 잘못됨")
         return sign_up(phone_number=body.phone_number, account_id=body.account_id, password=body.password, session=session)
