@@ -1,8 +1,9 @@
 from sqlalchemy.orm import Session
 from project.core.models.user import User
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, Response
 from project.core.models import Redis
 from sdk.api.message import Message
+from sdk.exceptions import CoolsmsException
 from project.core.config import API_KEY, API_SECRET, PHONE_NUMBER
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
@@ -40,7 +41,11 @@ def send_code(phone_number: str):
     params['to'] = phone_number
     params['from'] = PHONE_NUMBER
     params['text'] = f"[숲관] 회원가입 인증코드 입니다. : {code}"
-    Message(API_KEY, API_SECRET).send(params)
+    cool = Message(API_KEY, API_SECRET)
+    try:
+        cool.send(params)
+    except CoolsmsException as e:
+        raise Response(status_code=e.code)
     return HTTPException(status_code=status.HTTP_200_OK)
 
 def verify_code(phone_number:str, code:str):
