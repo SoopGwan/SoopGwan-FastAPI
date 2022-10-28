@@ -1,17 +1,20 @@
 from project.core import session_scope
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Response
 from project.utils.user import check_id, send_code, verify_code, sign_up
 from project.core.schemas.user import SendCode, VerifyCode, SignUp
 import re
 
 app = APIRouter()
 
-@app.options("/check")
+@app.options("/check", status_code=status.HTTP_204_NO_CONTENT)
 async def checking_id(account_id: str):
     with session_scope() as session:
-        message = check_id(account_id=account_id, session=session)
-        return HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail=message)
+        REGEX_ID = r'^[A-Za-z0-9]{6,24}$'
+        if not re.fullmatch(REGEX_ID, account_id):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="아이디 형식이 잘못됨.")
+        check_id(account_id=account_id, session=session)
+        return Response(status_code=204)
 
 @app.post("/send")
 async def sending_code(body: SendCode):
@@ -24,7 +27,7 @@ async def verifying_code(body: VerifyCode):
 @app.post("/signup", status_code=status.HTTP_201_CREATED)
 async def signup_user(body: SignUp):
     with session_scope() as session:
-        REGEX_PASSWORD = '^(?=.*[\d])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*()])[\w\d!@#$%^&*()]{8,}$'
+        REGEX_PASSWORD = r'^(?=.*[\d])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*()])[\w\d!@#$%^&*()]{8,}$'
         if not re.fullmatch(REGEX_PASSWORD, body.password):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="비밀번호 형식이 잘못됨")
         return sign_up(phone_number=body.phone_number, account_id=body.account_id, password=body.password, session=session)
