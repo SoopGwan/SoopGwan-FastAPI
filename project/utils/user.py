@@ -84,3 +84,18 @@ def create_refresh_token(account_id: str):
     exp = datetime.utcnow() + timedelta(hours=REFRESH_ACCESS_TIMEOUT + 9)
     encoded_jwt = jwt.encode({"exp": exp, "sub": account_id, "type": "refresh"}, SECRET, algorithm=ALGORITHM)
     return encoded_jwt
+
+def login(account_id:str, password:str, session:Session):
+    user = session.query(User.account_id, User.password).filter(User.account_id == account_id)
+
+    if not user.scalar():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="계정이 존재하지 않음")
+
+    user = user.first()
+    if not pwd_context.verify(password, user["password"]):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="비밀번호가 맞지 않음")
+
+    return {
+        "access_token": create_access_token(account_id=account_id),
+        "refresh_token": create_refresh_token(account_id=account_id)
+    }
