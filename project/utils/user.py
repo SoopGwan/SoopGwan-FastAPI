@@ -20,7 +20,7 @@ def check_id(account_id: str, session: Session):
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="아이디 중복")
 
     else:
-        return HTTPException(status_code=status.HTTP_204_NO_CONTENT)
+        return "success"
 
 
 def send_code(phone_number: str):
@@ -71,11 +71,11 @@ def password_hash(password: str):
     return pwd_context.hash(password)
 
 def create_access_token(account_id: str):
-    exp = datetime.utcnow() + timedelta(hours=JWT_ACCESS_TIMEOUT)
+    exp = datetime.utcnow() + timedelta(hours=JWT_ACCESS_TIMEOUT + 9)
     encoded_jwt = jwt.encode({"exp": exp, "sub": account_id}, SECRET, algorithm=ALGORITHM)
     return encoded_jwt
 
 def create_refresh_token(account_id: str):
-    exp = datetime.utcnow() + timedelta(hours=REFRESH_ACCESS_TIMEOUT)
+    exp = datetime.utcnow() + timedelta(hours=REFRESH_ACCESS_TIMEOUT + 9)
     encoded_jwt = jwt.encode({"exp": exp, "sub": account_id, "type": "refresh"}, SECRET, algorithm=ALGORITHM)
     return encoded_jwt
