@@ -1,8 +1,8 @@
 from project.core import session_scope
 
 from fastapi import APIRouter, HTTPException, status, Response
-from project.utils.user import check_id, send_code, verify_code, sign_up
-from project.core.schemas.user import SendCode, VerifyCode, SignUp
+from project.utils.user import check_id, send_code, verify_code, sign_up, login
+from project.core.schemas.user import SendCode, VerifyCode, SignUp, Login
 import re
 
 app = APIRouter()
@@ -28,3 +28,8 @@ async def verifying_code(body: VerifyCode):
 async def signup_user(body: SignUp):
     with session_scope() as session:
         return sign_up(phone_number=body.phone_number, account_id=body.account_id, password=body.password, session=session)
+
+@app.post("/login")
+async def logins(body: Login):
+    with session_scope() as session:
+        return login(account_id=body.account_id, password=body.password, session=session)
