@@ -52,7 +52,7 @@ class SignUp(BaseModel):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="비밀번호 형식이 잘못됨")
         return v
 
-def Login(BaseModel):
+class Login(BaseModel):
     account_id: constr()
     password: constr()
 
