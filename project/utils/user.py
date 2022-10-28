@@ -1,7 +1,9 @@
 from sqlalchemy.orm import Session
 from project.core.models.user import User
-from fastapi import HTTPException, status, Response
+from fastapi import HTTPException, status, Response, Depends
+from fastapi.security import OAuth2PasswordBearer
 from project.core.models import Redis
+from project.core import session_scope
 from sdk.api.message import Message
 from sdk.exceptions import CoolsmsException
 from project.core.config import API_KEY, API_SECRET, PHONE_NUMBER
@@ -13,6 +15,7 @@ import json
 import random
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 def check_id(account_id: str, session: Session):
     user = session.query(User.account_id).filter(User.account_id == account_id)
@@ -99,3 +102,37 @@ def login(account_id:str, password:str, session:Session):
         "access_token": create_access_token(account_id=account_id),
         "refresh_token": create_refresh_token(account_id=account_id)
     }
+
+def change_password(password: str, new_password: str, account_id: int, session: Session):
+    user = session.query(User).filter(User.account_id == account_id)
+
+    if not user.scalar():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="계정이 존재하지 않음")
+
+    user = user.first()
+
+    if not pwd_context.verify(password, user.password):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="비밀번호가 맞지 않음")
+
+    user.password = password_hash(new_password)
+    return {
+        "message": "success"
+    }
+
+def get_current_user(token: str = Depends(oauth2_scheme)):
+    with session_scope() as session:
+        credentials_exception = HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="인증 실패"
+        )
+        try:
+            payload = jwt.decode(token, SECRET, algorithms=ALGORITHM)
+            account_id = payload.get("sub")
+            if account_id is None:
+                raise credentials_exception
+        except jwt.PyJWTError:
+            raise credentials_exception
+        user = session.query(User).filter(User.account_id == account_id)
+        if not user.scalar():
+            raise credentials_exception
+        return user.first()
