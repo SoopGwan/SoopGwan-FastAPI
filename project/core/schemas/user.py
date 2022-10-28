@@ -47,7 +47,7 @@ class SignUp(BaseModel):
 
     @validator('password')
     def check_password(cls, v):
-        REGEX_PASSWORD = r'^(?=.*[\d])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*()])[\w\d!@#$%^&*()]{8,}$'
+        REGEX_PASSWORD = r'^(?=.*[\d])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*()])[\w\d!@#$%^&*()]{8,24}$'
         if not re.fullmatch(REGEX_PASSWORD, v):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="비밀번호 형식이 잘못됨")
         return v
@@ -66,7 +66,25 @@ class Login(BaseModel):
 
     @validator('password')
     def check_password(cls, v):
-        REGEX_PASSWORD = r'^(?=.*[\d])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*()])[\w\d!@#$%^&*()]{8,}$'
+        REGEX_PASSWORD = r'^(?=.*[\d])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*()])[\w\d!@#$%^&*()]{8,24}$'
         if not re.fullmatch(REGEX_PASSWORD, v):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="비밀번호 형식이 잘못됨")
+        return v
+
+class ChangePassword(BaseModel):
+    password: constr()
+    new_password: constr()
+
+    @validator('password')
+    def check_password(cls, v):
+        REGEX_PASSWORD = r'^(?=.*[\d])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*()])[\w\d!@#$%^&*()]{8,24}$'
+        if not re.fullmatch(REGEX_PASSWORD, v):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="비밀번호 형식이 잘못됨")
+        return v
+
+    @validator('new_password')
+    def check_new_password(cls, v):
+        REGEX_PASSWORD = r'^(?=.*[\d])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*()])[\w\d!@#$%^&*()]{8,24}$'
+        if not re.fullmatch(REGEX_PASSWORD, v):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="새로운 비밀번호 형식이 잘못됨")
         return v
