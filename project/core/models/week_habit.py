@@ -9,7 +9,7 @@ class WeekHabit(Base):
     content = Column(String(200), nullable=False)
     start_at = Column(Date, nullable=False)
     end_at = Column(Date, nullable=False)
-    status = Column(Integer, nullable=False)
+    status = Column(Integer, nullable=True)
     user_id = Column(ForeignKey('tbl_user.id'), index=True)
 
     user = relationship('User')
