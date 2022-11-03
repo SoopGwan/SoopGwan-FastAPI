@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from project.core.models.user import User
-from fastapi import HTTPException, status, Response, Depends
+from fastapi import HTTPException, status, Depends
 from fastapi.security import OAuth2PasswordBearer
 from project.core.models import Redis
 from project.core import session_scope
@@ -48,7 +48,7 @@ def send_code(phone_number: str):
     try:
         cool.send(params)
     except CoolsmsException as e:
-        raise Response(status_code=e.code)
+        raise HTTPException(status_code=e.code)
     return HTTPException(status_code=status.HTTP_200_OK)
 
 def verify_code(phone_number:str, code:str):
