@@ -5,7 +5,7 @@ from project.core.models import Base
 class WeekHabit(Base):
     __tablename__ = 'tbl_week_habit'
 
-    id = Column(BigInteger, primary_key=True)
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
     content = Column(String(200), nullable=False)
     start_at = Column(Date, nullable=False)
     end_at = Column(Date, nullable=False)
